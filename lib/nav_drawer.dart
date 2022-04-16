@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:friendly_chat/simple_layout.dart';
 import 'chat_screen.dart';
 import 'custom_layout.dart';
 
@@ -37,6 +38,15 @@ class NavDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return const Screen2();
+              }));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.add_chart_rounded),
+            title: const Text('Simple layout'),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return const SimpleLayout();
               }));
             },
           ),

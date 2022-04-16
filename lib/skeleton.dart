@@ -19,7 +19,7 @@ class Skeleton extends StatelessWidget {
         title: Text(title),
         elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0, // NEW
       ),
-      body: body
+      body: body,
     );
   }
 }
