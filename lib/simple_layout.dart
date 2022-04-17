@@ -25,7 +25,7 @@ class SimpleLayout extends StatelessWidget {
               Icon(Icons.star, color: Colors.amber.shade600),
               const Text('41')
             ],
-          )
+          ),
         ],
       )
     );
@@ -41,6 +41,43 @@ class SimpleLayout extends StatelessWidget {
     );
   }
 
+  Widget _buildActionButton(Color color, IconData icon, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          onPressed: () {},
+          icon: Icon(icon, color: color)
+        ),
+        Container(
+          padding: const EdgeInsets.only(top: 8),
+          child: Text(label, style: TextStyle(
+            color: color,
+            fontSize: 12,
+            fontWeight: FontWeight.w400
+          )),
+        )
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
+    Color color = Theme.of(context).primaryColor;
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildActionButton(color, Icons.call, 'CALL'),
+          _buildActionButton(color, Icons.near_me, 'ROUTE'),
+          _buildActionButton(color, Icons.share, 'SHARE')
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Skeleton(
@@ -48,7 +85,8 @@ class SimpleLayout extends StatelessWidget {
       body: Column(
         children: [
           _buildImage(),
-          _buildTitleSection(context)
+          _buildTitleSection(context),
+          _buildActionButtons(context)
         ],
       )
     );
