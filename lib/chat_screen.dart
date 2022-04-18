@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:friendly_chat/chat_message.dart';
 import 'package:friendly_chat/skeleton.dart';
+import 'package:provider/provider.dart';
+import 'package:friendly_chat/models/chat_screen_model.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({
@@ -13,20 +15,15 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
-  final List<ChatMessage> _messages = [];
   final _textController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool _isComposing = false;
 
-  @override
-  void dispose() {
-    for (var message in _messages){
-      message.animationController.dispose();
-    }
-    super.dispose();
-  }
+  _handleSubmitted(String text) {
+    var chatScreen = context.read<ChatScreenModel>();
 
-  void _handleSubmitted(String text) {
+    if (!_isComposing) return null;
+
     _textController.clear();
 
     setState(() {
@@ -40,14 +37,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         vsync: this
       ),
     );
-    setState(() {
-      _messages.insert(0, message);
-    });
+
+    // Provider.of<ChatScreenModel>(context, listen: false).addMessage(message);
+    chatScreen.addMessage(message);
+
     _focusNode.requestFocus();
     message.animationController.forward();
   }
 
-  Widget _buildTextComposer() {
+  Widget _buildTextComposer(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8),
       child: Row(
@@ -61,7 +59,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     _isComposing = text.isNotEmpty
                   });
                 },
-                onSubmitted: _isComposing ? _handleSubmitted : null,
+                onSubmitted: (String text) {
+                  _handleSubmitted(text);
+                },
                 focusNode: _focusNode,
                 decoration: const InputDecoration.collapsed(
                   hintText: 'Send a message'
@@ -78,11 +78,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               child: Theme.of(context).platform == TargetPlatform.iOS 
                 ? CupertinoButton(
                     child: const Text('Send'),
-                    onPressed: _isComposing ? () =>  _handleSubmitted(_textController.text) : null
+                    onPressed: () {
+                      _handleSubmitted(_textController.text);
+                    },
                   ) 
                 : IconButton(
                     icon: const Icon(Icons.send),
-                    onPressed: () => _isComposing ? _handleSubmitted(_textController.text) : null,
+                     onPressed: () {
+                      _handleSubmitted(_textController.text);
+                    },
                   )
             ),
           )
@@ -99,11 +103,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         child: Column(
           children: [
             Flexible(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8.0),
-                reverse: true,
-                itemBuilder: (_, index) => _messages[index],
-                itemCount: _messages.length
+              child: Consumer<ChatScreenModel>(
+                builder: (context, chatScreen, child) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(8.0),
+                    reverse: true,
+                    itemBuilder: (_, index) => chatScreen.messages[index],
+                    itemCount: chatScreen.messagesCount
+                  );
+                },
               )
             ),
             const Divider(height: 1.0),
@@ -111,7 +119,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
               ),
-              child: _buildTextComposer()
+              child: _buildTextComposer(context)
             )
           ],
         ),

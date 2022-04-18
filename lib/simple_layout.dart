@@ -112,15 +112,13 @@ class SimpleLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Skeleton(
       title: 'Simple layout',
-      body: SingleChildScrollView(
-        child: Column(
+      body: ListView(
         children: [
           _buildImage(),
           _buildTitleSection(context),
           _buildActionButtons(context),
           _buildText()
         ],
-      ),
       )
     );
   }
